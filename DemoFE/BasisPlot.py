@@ -6,8 +6,7 @@ from math import sqrt
 
 fig = plt.figure()
 
-
-tri = pytri.Triangulation([1, -sqrt(3)/2, -sqrt(3)/2], [0, 0.5, -0.5])
+tri = pytri.Triangulation([1, -sqrt(3) / 2, -sqrt(3) / 2], [0, 0.5, -0.5])
 ref = pytri.UniformTriRefiner(tri)
 
 phi0 = [1, 0, 0]
