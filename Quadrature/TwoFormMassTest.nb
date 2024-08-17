@@ -677,7 +677,7 @@ Cell[BoxData[
   RowBox[{"Import", "[", 
    RowBox[{
     RowBox[{
-    "\"\</Users/katharine/Projects/PyPDE/DemoFE/Quadrature/strang\>\"", "<>", 
+    "\"\</Users/katharine/Projects/PyPDE/Agnes/Quadrature/strang\>\"", "<>", 
      "fileNum", " ", "<>", " ", "\"\<_x.txt\>\""}], ",", " ", 
     "\"\<Table\>\""}], "]"}]}]], "Input",
  CellChangeTimes->{{3.932761793848394*^9, 3.932761805005293*^9}, {
@@ -784,7 +784,7 @@ Cell[BoxData[
    RowBox[{"Import", "[", 
     RowBox[{
      RowBox[{
-     "\"\</Users/katharine/Projects/PyPDE/DemoFE/Quadrature/strang\>\"", "<>",
+     "\"\</Users/katharine/Projects/PyPDE/Agnes/Quadrature/strang\>\"", "<>",
        " ", "fileNum", " ", "<>", "\"\<_w.txt\>\""}], ",", " ", 
      "\"\<Table\>\""}], "]"}], "]"}]}]], "Input",
  CellChangeTimes->{{3.932765111371798*^9, 3.932765137586276*^9}, {

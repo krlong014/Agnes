@@ -1,4 +1,4 @@
-from DemoFE import *
+from Agnes import *
 import numpy as np
 import numpy.linalg as npla
 

@@ -2,14 +2,14 @@ import setuptools
 
 
 setuptools.setup(
-    name="DemoFE", 
+    name="Agnes", 
     version="0.1",
     author="Katharine Long",
     author_email="katharine.long@ttu.edu",
-    description="Minimalist finite elements",
+    description="Agnes: minimalist finite elements",
     long_description="Minimalist finite elements",
     long_description_content_type="text/markdown",
-    url="https://github.com/krlong014/DemoFE",
+    url="https://github.com/krlong014/Agnes",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
