@@ -8,7 +8,7 @@
 # --------------------------------------------------------------------------
 
 import numpy as np
-from Quadrature import GaussRule
+from .QuadratureRule import GaussRule
 
 
 # --------------------------------------------------------------------------

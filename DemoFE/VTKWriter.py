@@ -1,17 +1,46 @@
-from LoadableMesh import *
-from XMLHeader import *
+import numpy as np
+from .LoadableMesh import *
+from PyUtils.XMLHeader import *
+from .DiscreteSpace import _DiscFuncElem
 
 class VTKWriter:
 
-    def __init__(self, file):
-        self.file = file
+    def __init__(self, file : str):
+        
+           
+        self.file = open(file, 'w')
         self.fields = {}
+        self.mesh = None
 
     def addMesh(self, mesh):
         self.mesh = mesh
 
-    def addField(self, name, vec):
-        self.fields[name] = vec
+    def addField(self, name, f, funcIndex=0):
+
+      print('type of f is ', type(f))
+      print('type of self is ', type(self))
+        
+      if isinstance(f, np.ndarray):
+        if self.mesh == None:
+          raise RuntimeError('VTKWriter must add mesh before'
+                             ' adding fields')
+        nNodes = len(self.mesh.verts)
+        if len(f) % nNodes != 0:
+          raise ValueError('Vector size isn\'t an integer '
+                           'multiple of # mesh nodes')
+        fVec = f.reshape((nNodes, len(f)//nNodes))[:,funcIndex]
+                    
+        self.fields[name] = fVec
+
+      elif isinstance(f, _DiscFuncElem):
+        self.addField(name, f.copyVecSlice())
+
+      else:
+        raise TypeError('Argument f should be a numpy array '
+                        'or a _DiscFuncElem; found type {}'\
+                          .format(type(f)))
+        
+      
 
     def write(self):
 
@@ -133,7 +162,7 @@ class VTKWriter:
 
 if __name__=='__main__':
 
-    from TriangleMeshReader import *
+    from .TriangleMeshReader import *
     import numpy as np
 
     reader = TriangleMeshReader('../Geometry/oneHole.1')
@@ -145,8 +174,8 @@ if __name__=='__main__':
 
 
 
-    file = open('test.vtu', 'w')
-    writer = VTKWriter(file)
+    
+    writer = VTKWriter('test.vtu')
     writer.addMesh(mesh)
     writer.addField('test', vec)
     writer.write()

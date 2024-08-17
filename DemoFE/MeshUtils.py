@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.tri as mtri
 import numpy as np
-from TriangleMeshReader import *
+from .TriangleMeshReader import *
 
 # --------------------------------------------------------------------------
 # Some functions to work with fields defined on triangular meshes.

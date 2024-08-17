@@ -140,7 +140,7 @@ if __name__=='__main__':
         
         u = sp.linalg.spsolve(A, b)
   
-        file = open('Results/DH-{}.vtu'.format(level), 'w')
+        file = 'Results/DH-{}.vtu'.format(level)
         writer = VTKWriter(file)
         writer.addMesh(mesh)
         writer.addField('u', u)

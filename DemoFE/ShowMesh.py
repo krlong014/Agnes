@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from math import sqrt
-from LoadableMesh import *
+from .LoadableMesh import *
 
 class MPLMeshViewer:
 

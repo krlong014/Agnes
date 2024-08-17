@@ -1,7 +1,7 @@
 import numpy as np
 import pprint
 
-class Quadrature:
+class QuadratureRule:
   def __init__(self, name, order, wQuad, xQuad):
     self._name = name
     self._order = order
@@ -22,6 +22,17 @@ class Quadrature:
   def order(self):
     return self._order
   
+  def evalFunc(self, f, fDim = 1):
+    if not callable(f):
+      raise TypeError('evalFunc arg f={} not callable'.format(f))
+    
+    rtn = np.zeros((self.n(), fDim))
+    for i,xy in enumerate(self.X()):
+      rtn[i] = f(xy[0],xy[1])
+
+    return rtn
+
+  
   def show(self):
     pprint.pp('Quadrature rule: {}'.format(self._name))
     pprint.pp('x=')
@@ -31,10 +42,10 @@ class Quadrature:
               
   
 
-class GaussRule(Quadrature):
+class GaussRule(QuadratureRule):
   
   def __init__(self, order):
-
+    
     rule = self.gauss[order]
     xq = np.array(rule['x'])
     wq = np.array(rule['w'])
@@ -44,7 +55,7 @@ class GaussRule(Quadrature):
   gauss = {
     1: {
       'x' : ((1/3, 1/3),),
-      'w' : (1,)
+      'w' : (1.0,)
     },
 
     2: {

@@ -1,4 +1,4 @@
-from LoadableMesh import *
+
 
 # --------------------------------------------------------------------------
 # Reader for constructing a mesh from data stored in the file formats
@@ -20,6 +20,8 @@ from LoadableMesh import *
 # Katharine Long, Sep 2020
 # For Math 5344
 # --------------------------------------------------------------------------
+
+from .LoadableMesh import LoadableMesh
 
 class TriangleMeshReader:
     # Create a reader object to read a mesh from the files
