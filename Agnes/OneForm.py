@@ -9,6 +9,23 @@ class OneForm(ABC):
   Abstract interface for one forms
   '''
 
+  def __init__(self, testID : int = 0):
+    '''
+    Constructor for abstract one-form. The only argument is the ID for
+    the test functions appearing in this one-form. 
+    '''
+    if testID < 0:
+      raise ValueError('Test function index should be non-negative')
+    
+    self._testID = testID
+
+  def testID(self):
+    '''
+    Return the ID of the test function appearing in this
+    one-form.
+    '''
+    return self._testID
+
   @abstractmethod
   def localVec(self, tri : Triangle, nodes : tuple):
     '''
@@ -22,7 +39,8 @@ class QuadratureOneForm(OneForm):
   One form to be computed by quadrature 
   '''
 
-  def __init__(self, quad : QuadratureRule):
+  def __init__(self, quad : QuadratureRule, testID:int=0):
+    super().__init__(testID = testID)
     self._quad = quad
     self._x = quad.X()[:,0].reshape((quad.n(),1))
     self._y = quad.X()[:,1].reshape((quad.n(),1))
@@ -48,7 +66,8 @@ class QuadratureOneForm(OneForm):
 
 class ConstCoeffOneForm(OneForm):
 
-  def __init__(self, coeff : float):
+  def __init__(self, coeff : float, testID:int=0):
+    super().__init__(testID = testID)
     self._coeff = coeff
     self._vec = np.array([1.0,1.0,1.0])/6.0
 
@@ -59,8 +78,8 @@ class ConstCoeffOneForm(OneForm):
 
 class VarCoeffOneForm(QuadratureOneForm):
 
-  def __init__(self, quad, coeffFunc, dfs = None):
-    super().__init__(quad)
+  def __init__(self, quad, coeffFunc, dfs = None, testID:int=0):
+    super().__init__(quad, testID = testID)
     self._coeffFunc = coeffFunc
     self._dfs = dfs
     self._phiWork = np.zeros_like(self.phiAtQuadPts())

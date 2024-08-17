@@ -103,6 +103,7 @@ class _DiscFunc(NamedObject):
       raise ValueError('Bad vector size in _DiscFunc.setVector: '
                        'expected size {}, got {}'.format(len(self._vec),
                                                          len(vec)))
+    self._vec = vec
 
   def __getitem__(self, i : int):
     if i<0 or i>=self._ds.numFuncs():
