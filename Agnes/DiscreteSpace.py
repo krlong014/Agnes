@@ -17,6 +17,9 @@ class DiscreteSpace:
   
   def numDofs(self):
     return self._nDofs
+  
+  def mesh(self):
+    return self._mesh
 
   def getDofs(self, elemID, funcIDs):
 

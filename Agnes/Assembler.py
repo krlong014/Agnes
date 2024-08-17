@@ -12,11 +12,10 @@ class Assembler:
   Assembler drives the matrix/vector assembly process
   '''
 
-  def __init__(self, mesh : LoadableMesh, ds : DiscreteSpace,
+  def __init__(self, ds : DiscreteSpace,
                twoForms : Iterable, 
                oneForms : Iterable):
     
-    self._mesh = mesh
     self._ds = ds
     self._oneForms = oneForms
     self._twoForms = twoForms
@@ -36,7 +35,7 @@ class Assembler:
     debug = False
 
     # Loop over elements
-    mesh = self._mesh
+    mesh = self._ds.mesh()
     for ie, eVerts in enumerate(mesh.elems):
 
       if debug: print('processing element #%d' % ie, " vertices=", eVerts)
