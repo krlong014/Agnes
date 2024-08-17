@@ -28,11 +28,12 @@ class DHProb:
 def test_DebyeHuckel():
   '''Solve the Debye-Huckel equation with homogeneous Neumann BCs'''
 
-  n = 4
+  n = 128
   beta = 1.0
   prob = DHProb(beta=beta)
 
-  mesh = meshRectangle(nx=n, ny=n, ax=0, bx=0, ay=0, by=1)
+  print('Building mesh...')
+  mesh = meshRectangle(nx=n, ny=n, ax=0, bx=1, ay=0, by=1)
   ds = DiscreteSpace(mesh, 1)
 
   twoForms = (
@@ -48,19 +49,31 @@ def test_DebyeHuckel():
     VarCoeffOneForm(quad, prob.rhsFunc), 
     )
 
-  
+  print('Building matrix and vector...')
   assembler = Assembler(ds, twoForms, oneForms)
 
   (A, b) = assembler.assemble()
 
+  print('Solving equation...')
   solnVec = spla.spsolve(A, b)
 
   u = DiscreteFunction(ds, 'u')
   u.setVector(solnVec)
 
-  
+  print('Writing solution...')
+
+  writer = VTKWriter('DH-{}.vtu'.format(n))
+  writer.addMesh(mesh)
+  writer.addField('u', solnVec, 0)
+  writer.write()
 
 
+
+
+
+if __name__=='__main__':
+
+  test_DebyeHuckel()
 
 
 

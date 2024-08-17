@@ -4,7 +4,7 @@ from .Assembler import Assembler
 from .MeshUtils import *
 from .OneForm import (OneForm, QuadratureOneForm,
                       ConstCoeffOneForm, VarCoeffOneForm)
-from .OneForm import (TwoForm, QuadratureTwoForm,
+from .TwoForm import (TwoForm, 
                       LaplacianTwoForm, MassTwoForm)
 from .QuadratureRule import (QuadratureRule, GaussRule)
 from .Triangle import Triangle

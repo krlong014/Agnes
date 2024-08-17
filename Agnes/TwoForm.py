@@ -9,6 +9,19 @@ class TwoForm(ABC):
   Abstract interface for two forms
   '''
 
+  def __init__(self, testID:int=0, unkID:int=0):
+    '''
+    Constructor for abstract two-form. The only arguments are the ID for
+    the test and unknown functions 
+    '''
+    if testID < 0:
+      raise ValueError('Test function index should be non-negative')
+    if unkID < 0:
+      raise ValueError('Unknown function index should be non-negative')
+    
+    self._testID = testID
+    self._unkID = unkID
+    
   @abstractmethod
   def localMat(self, tri : Triangle, nodes : tuple):
     '''
@@ -16,13 +29,26 @@ class TwoForm(ABC):
     '''
     pass
 
+  def testID(self):
+    '''
+    Return the ID of the test function appearing in this two-form.
+    '''
+    return self._testID
+
+  def unkID(self):
+    '''
+    Return the ID of the unknown function appearing in this two-form.
+    '''
+    return self._unkID
+
 
 class LaplacianTwoForm(TwoForm):
   '''
   Local Laplacian matrix builder
   '''
 
-  def __init__(self, coeff=1.0):
+  def __init__(self, coeff=1.0, testID:int=0, unkID:int=0):
+    super().__init__(testID=testID, unkID=unkID)
     if not isinstance(coeff, (int, float, np.double)):
       raise TypeError('Coefficient argument to LaplacianTwoForm '
                       'should be a constant; argument was {}'\
@@ -42,7 +68,7 @@ class LaplacianTwoForm(TwoForm):
     return np.array([[-1, 1, 0], [-1, 0, 1]])
 
   
-  def localMat(self, tri : Triangle, nodes : tuple):
+  def localMat(self, tri:Triangle, nodes:tuple):
     '''
     Form the local matrix. Since the gradients are constant, no quadrature
     is needed, but we do have to transform the gradients from reference to
@@ -70,7 +96,8 @@ class LaplacianTwoForm(TwoForm):
 #
 class MassTwoForm(TwoForm):
 
-  def __init__(self, coeff=1.0):
+  def __init__(self, coeff=1.0, testID:int=0, unkID:int=0):
+    super().__init__(testID=testID, unkID=unkID)
     if not isinstance(coeff, (int, float, np.double)):
       raise TypeError('Coefficient argument to LaplacianTwoForm '
                       'should be a constant; argument was {}'\

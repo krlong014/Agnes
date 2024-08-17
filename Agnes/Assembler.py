@@ -24,12 +24,13 @@ class Assembler:
   def assemble(self, buildMat=True, buildVec=True):
 
     N = self._ds.numDofs()
+    print('N=', N)
     A = None
     b = None
     if buildMat:
       A = sp.dok_matrix((N,N))
     if buildVec:
-      b = np.array((N,1))
+      b = np.zeros(N)
 
     # Indicate whether debugging output is desired
     debug = False
@@ -74,7 +75,8 @@ class Assembler:
             r = testDofs[i]
             b[r] += b_loc[i]
 
-        
+    A = A.tocsr()
+
     return (A,b)
             
 

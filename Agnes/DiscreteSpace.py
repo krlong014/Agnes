@@ -21,9 +21,7 @@ class DiscreteSpace:
   def mesh(self):
     return self._mesh
 
-  def getDofs(self, elemID, funcIDs):
-
-    verts = self._mesh.elems[elemID]
+  def getDofs(self, verts, funcIDs):
 
     if isinstance(funcIDs, int):
       return (self._dofsForFunc(verts, funcIDs),)      
@@ -35,16 +33,21 @@ class DiscreteSpace:
   
   def _dofsForFunc(self, verts, fid):
 
-    rtn = (
-      self._nf * verts[0] + fid,
-      self._nf * verts[1] + fid,
-      self._nf * verts[2] + fid
-    )
+    rtn = list(map(lambda v:(self._nf*v + fid), verts))
+
+    # rtn = (
+    #   self._nf * verts[0] + fid,
+    #   self._nf * verts[1] + fid,
+    #   self._nf * verts[2] + fid
+    # )
 
     return rtn
   
   def getDof(self, nodeID, funcID):
     return self._nf * nodeID + funcID
+  
+  #def evalAtNodes(self, f:callable):
+
 
 
 class _DiscFuncElem(NamedObject):
@@ -92,7 +95,6 @@ class _DiscFunc(NamedObject):
 
     for i in range(self._ds.numFuncs()):
       dfe = _DiscFuncElem(self, i, name + '[{}]'.format(i))
-      print('dfe has type ', type(dfe))
       self._elems.append(dfe)
 
   def getVector(self):

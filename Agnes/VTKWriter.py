@@ -17,8 +17,8 @@ class VTKWriter:
 
     def addField(self, name, f, funcIndex=0):
 
-      print('type of f is ', type(f))
-      print('type of self is ', type(self))
+      #print('type of f is ', type(f))
+      #print('type of self is ', type(self))
         
       if isinstance(f, np.ndarray):
         if self.mesh == None:
