@@ -2,11 +2,12 @@ import numpy as np
 import pprint
 
 class QuadratureRule:
-  def __init__(self, name, order, wQuad, xQuad):
-    self._name = name
+  def __init__(self, wQuad, xQuad, order=4, dim=2, name='Quad'):
     self._order = order
     self._xQuad = xQuad
     self._wQuad = wQuad
+    self._dim = dim
+    self._name = name
 
     assert(len(xQuad) == len(wQuad))
 
@@ -16,175 +17,123 @@ class QuadratureRule:
   def W(self):
     return self._wQuad
   
-  def n(self):
+  def nPts(self):
     return len(self._wQuad)
   
   def order(self):
     return self._order
   
-  def evalFunc(self, f, fDim = 1):
-    if not callable(f):
-      raise TypeError('evalFunc arg f={} not callable'.format(f))
-    
-    rtn = np.zeros((self.n(), fDim))
-    for i,xy in enumerate(self.X()):
-      rtn[i] = f(xy[0],xy[1])
-
-    return rtn
-
+  def dim(self):
+    return self._dim
+  
   
   def show(self):
     pprint.pp('Quadrature rule: {}'.format(self._name))
-    pprint.pp('x=')
-    pprint.pp(self.X())
-    pprint.pp('w=')
-    pprint.pp(self.W())
-              
-  
+    for x,w in zip(self.X(), self.W()):
+      print('x={} w={}'.format(x,w)) 
 
-class GaussRule(QuadratureRule):
-  
-  def __init__(self, order):
+  def test(self, tol=1.0e-14):
+
+    dim = self.dim()    
+    if dim==1:
+      err = self._test1D()
+    elif dim==2:
+      err = self._test2D()
     
-    rule = self.gauss[order]
-    xq = np.array(rule['x'])
-    wq = np.array(rule['w'])
+    passed = err <= tol
 
-    super().__init__('Gauss({})'.format(order), order, wq, xq)
+    if not passed:
+      print('Test FAILED! Showing quadrature rule:')
+      self.show()
+    
+    return passed, err
 
-  gauss = {
-    1: {
-      'x' : ((1/3, 1/3),),
-      'w' : (1.0,)
-    },
+  def _test1D(self):
+    
+    import numpy.polynomial.polynomial as poly	
+	
+    a = np.ones(self.order()+1)
+    P = poly.Polynomial(a)
 
-    2: {
-      'x' : ((2/3, 1/6),(1/6, 2/3), (1/6,1/6)),
-      'w' : (1/3,1/3,1/3)    
-    },
+    answer = P.integ()(1) - P.integ()(-1)
 
-    3: {
-      'x': [(0.659027622374092, 0.231933368553031),
-           (0.659027622374092, 0.109039009072877),
-           (0.231933368553031, 0.659027622374092),
-           (0.231933368553031, 0.109039009072877),
-           (0.109039009072877, 0.659027622374092),
-           (0.109039009072877, 0.231933368553031)],
-      'w': [0.16666666666666666,
-           0.16666666666666666,
-           0.16666666666666666,
-           0.16666666666666666,
-           0.16666666666666666,
-           0.16666666666666666]
-      },
+    sum = 0
+    for w, x in zip(self.W(), self.X()):
+      sum += w * P(x)
 
-    4: {
-      'x': [(0.816847572980459, 0.091576213509771),
-           (0.091576213509771, 0.816847572980459),
-           (0.091576213509771, 0.091576213509771),
-           (0.10810301816807, 0.445948490915965),
-           (0.445948490915965, 0.10810301816807),
-           (0.445948490915965, 0.445948490915965)],
-      'w': [0.109951743655322,
-           0.109951743655322,
-           0.109951743655322,
-           0.223381589678011,
-           0.223381589678011,
-           0.223381589678011]
-      },
-    5: {
-        'x': [(0.3333333333333333, 0.3333333333333333),
-           (0.7974269853530872, 0.10128650732345633),
-           (0.10128650732345633, 0.7974269853530872),
-           (0.10128650732345633, 0.10128650732345633),
-           (0.05971587178976981, 0.47014206410511505),
-           (0.47014206410511505, 0.05971587178976981),
-           (0.47014206410511505, 0.47014206410511505)],
-        'w': [0.225,
-           0.12593918054482717,
-           0.12593918054482717,
-           0.12593918054482717,
-           0.13239415278850616,
-           0.13239415278850616,
-           0.13239415278850616]
-      },
-    6: {'x': [(0.873821971016996, 0.063089014491502),
-           (0.063089014491502, 0.873821971016996),
-           (0.063089014491502, 0.063089014491502),
-           (0.501426509658179, 0.24928674517091),
-           (0.24928674517091, 0.501426509658179),
-           (0.24928674517091, 0.24928674517091),
-           (0.636502499121399, 0.310352451033785),
-           (0.636502499121399, 0.053145049844816),
-           (0.310352451033785, 0.636502499121399),
-           (0.310352451033785, 0.053145049844816),
-           (0.053145049844816, 0.636502499121399),
-           (0.053145049844816, 0.310352451033785)],
-     'w': [0.050844906370207,
-           0.050844906370207,
-           0.050844906370207,
-           0.116786275726379,
-           0.116786275726379,
-           0.116786275726379,
-           0.082851075618374,
-           0.082851075618374,
-           0.082851075618374,
-           0.082851075618374,
-           0.082851075618374,
-           0.082851075618374]}
-    }
+    err = np.abs(answer - sum)
+    return err
+              
+  def _test2D(self):
+    p = self.order()
+    answer = _test_poly2D_exact_integral(p)
+
+    sum = 0
+    for w, xy in zip(self.W(), self.X()):
+      sum += w * _test_poly2D(p,xy)
+    sum = 0.5*sum
+
+    err = np.abs(answer - sum)
+    return err
+
+    
+
+
   
-
-
-
-def test1(x,y):
-  return  -6 - 3*x - 7*y
-
-def test2(x,y):
-  return 2 - 2*x - 9*x**2 + 3*y - 3*x*y + y**2
-
-def test3(x,y):
-  return 2 + 9*x - 8*x**2 - 7*x**3 - y - 6*x*y + 7*x**2*y + \
-    7*y**2 + 7*x*y**2 - 5*y**3
-
-def test4(x,y):
-  return 7 - 9*x - 9*x**2 + x**3 - 2*x**4 + 3*y - \
-      10*x**3*y + 5*y**2 + 3*x*y**2 - 2*x**2*y**2 + 2*y**3 - 10*x*y**3 + 4*y**4
-
-def test5(x,y):
-  return -3 + 4*x - 2*x**2 - 5*x**3 - 8*x**4 + 3*x**5 - 4*y + 2*x*y \
-    + 7*x**2*y + 3*x**3*y + x**4*y + 6*y**2 + 6*x*y**2 + 8*x**2*y**2 \
-      - 8*x**3*y**2 + 9*y**3 + 6*x*y**3 - 4*x**2*y**3 - 2*y**4 \
-        + 7*x*y**4 - 7*y**5
-
-def test6(x,y):
-  return (x+y)**6
-
-
-testFuncMap = {
-  1: test1,
-  2: test2,
-  3: test3,
-  4: test4,
-  5: test5,
-  6: test6
-}
   
-def testAns(n):
-  results = (-14/3, 3/8, 49/30, 203/90, -487/504, 1/8)
-  return results[n-1]
+def _test_poly2D_exact_integral(p : int):
+  
+  sum = 0
 
+  for i in range(0, p+1):
+    for j in range(0, p + 1 - i):
+      sum += _fact(i)*_fact(j)/_fact(i+j+2)
+  
+  return sum
+
+def _fact(n : int):
+  
+  assert(n>=0)
+
+  if n==0:
+    return 1
+  return n*_fact(n-1)
+  
+    
+
+    
+def _test_poly2D(p : int, xy):
+  sum = 0
+  x = xy[0]
+  y = xy[1]
+  
+  powx = 1
+  for i in range(0, p+1):
+    powy = 1
+    for j in range(0, p + 1 - i):
+      sum += powx * powy
+      powy *= y
+    powx *= x
+
+  return sum
+
+
+
+
+def main():
+  maxP = 9
+
+  for p in range(1, maxP+1):
+    xy=(1/3,1/3)
+    pVal = _test_poly2D(p, xy)
+    Q = _test_poly2D_exact_integral(p)
+    print('p={} P(1/3,1/3)={}, Q={}'.format(p,pVal,Q))
+
+    
+
+
+
+    
 if __name__=='__main__':
 
-  for i in range(1,7):
-    rule = GaussRule(i)
-    rule.show()
-    f = testFuncMap[i]
-    ans = testAns(i)
-
-    sum = 0.0
-    for xy,w in zip(rule.X(), rule.W()):
-      sum += 0.5*w * f(xy[0], xy[1])
-
-    err = np.abs(sum-ans)
-    print('order={}, quad={}, exact ={}, err={}'.format(i,sum,ans, err))
+  main()
